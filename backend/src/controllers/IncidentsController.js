@@ -37,28 +37,24 @@ module.exports = {
         return response.json(incidents);
     },
     async delete(request, response) {
-        const resut = response.status(401).json({ error: 'Operation not permited.' });
+       
         const { id } = request.params;
         const ong_id = request.headers.authorization;
-
-
-        console.log(id);
+  
         const incident = await connection('incidents')
             .where('id', id)
             .select('ong_id')
-            .first();
-
-        if (id == undefined || incident.ong_id == undefined) {
-            console.log(resut.statusMessage)
-            return resut;
-        }
+            .first();            
+       
         if (incident.ong_id != ong_id) {
             console.log(resut.statusMessage)
-            return resut;
+            console.log("Entrei incident.ong_id != ong_id ", incident.ong_id, id, ong_id)
+            return response.status(401).json({ error: 'Operation not permited.' });
         }
         await connection('incidents')
             .where('id', id)
             .delete();
+            console.log("Entrei no delete", incident.ong_id, id, ong_id)
         return response.status(204).send();
     }
 }
